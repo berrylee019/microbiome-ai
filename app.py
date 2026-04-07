@@ -1,6 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 from PyPDF2 import PdfReader
+import time # 분석 시뮬레이션을 위한 라이브러리
 
 # 1. 페이지 설정 및 보안 설정
 st.set_page_config(
@@ -52,6 +53,15 @@ st.markdown("""
     .card-tech { font-size: 14px; font-weight: 600; color: #3B82F6; margin-top: 5px; }
     .card-desc { font-size: 15px; color: #4B5563; margin-top: 15px; line-height: 1.6; }
     hr { margin: 40px 0; border: 0; border-top: 1px solid #E5E7EB; }
+    
+    /* 비전 분석용 스타일 */
+    .vision-container {
+        background-color: #F9FAFB;
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid #E5E7EB;
+        margin-bottom: 20px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -125,9 +135,81 @@ elif mode == "📊 02. 환자 리포트":
 
 elif mode == "📸 03. 비전 분석":
     st.header("📸 Microbiome Vision Guide")
-    st.write("식단 및 배변 사진 분석 모듈 (PoC)")
-    st.camera_input("분석용 사진 촬영")
-    st.button("이미지 패턴 분석 실행")
+    st.write("환자의 식단 및 배변 사진을 분석하여 장 건강 상태와 장내 미생물의 상관관계를 추적하는 PoC 모듈입니다.")
+
+    st.markdown('<div class="vision-container">', unsafe_allow_html=True)
+    
+    col_input1, col_input2 = st.columns(2)
+
+    with col_input1:
+        st.subheader("1️⃣ 배변 사진 (Stool)")
+        stool_file = st.file_uploader("기록된 배변 사진 업로드", type=['jpg', 'png', 'jpeg'], key="stool_upload")
+        stool_cam = st.camera_input("직접 촬영", key="stool_cam")
+
+    with col_input2:
+        st.subheader("2️⃣ 식단 사진 (Food)")
+        food_file = st.file_uploader("기록된 식단 사진 업로드", type=['jpg', 'png', 'jpeg'], key="food_upload")
+        food_cam = st.camera_input("직접 촬영", key="food_cam")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # 업로드/촬영된 이미지를 화면에 표시
+    col_show1, col_show2 = st.columns(2)
+    
+    final_stool_img = None
+    final_food_img = None
+
+    with col_show1:
+        if stool_file:
+            st.image(stool_file, caption="업로드된 배변 사진", width=300)
+            final_stool_img = stool_file
+        elif stool_cam:
+            st.image(stool_cam, caption="촬영된 배변 사진", width=300)
+            final_stool_img = stool_cam
+
+    with col_show2:
+        if food_file:
+            st.image(food_file, caption="업로드된 식단 사진", width=300)
+            final_food_img = food_file
+        elif food_cam:
+            st.image(food_cam, caption="촬영된 식단 사진", width=300)
+            final_food_img = food_cam
+
+    st.markdown("---")
+
+    # 분석 실행 버튼
+    if final_stool_img and final_food_img:
+        if st.button("이미지 패턴 분석 실행", type="primary"):
+            with st.spinner("AI가 배변 및 식단 이미지 패턴을 분석 중입니다..."):
+                # PoC 시연을 위한 가상 분석 시간 (3초)
+                time.sleep(3)
+                
+                # 가상의 분석 결과 출력 (PoC 버전)
+                col_res1, col_res2 = st.columns(2)
+
+                with col_res1:
+                    st.success("### 💩 배변 패턴 분석 결과")
+                    st.markdown("""
+                    - **형태 (Bristol Scale):** Type 4 (정상, 바나나 모양)
+                    - **상태 특이사항:** 혈변 징후 없음. 점막 징후 소량 관찰.
+                    """)
+
+                with col_res2:
+                    st.warning("### 🥗 식단 패턴 분석 결과")
+                    st.markdown("""
+                    - **구성:** 단백질 위주 식단 (탄수화물 부족)
+                    - **주요 식품군:** 닭가슴살, 계란
+                    - **섬유질 섭취:** 매우 부족
+                    """)
+
+                st.markdown("---")
+                st.info("### 🩺 임상적 소견 및 미생물 추론 (PoC)")
+                st.markdown("""
+                현재 식단 내 식이섬유 부족으로 인해 장내 유익균(예: *Faecalibacterium*)의 다양성 감소 위험이 관찰됩니다.
+                배변 형태는 정상이나, 지속적인 섬유질 부족은 장 점막 손상을 유발할 가능성이 있습니다.
+                """)
+    else:
+        st.warning("분석을 실행하려면 배변 사진과 식단 사진을 모두 제공해야 합니다 (업로드 또는 촬영).")
 
 elif mode == "🚨 04. 케어 모니터링":
     st.header("🚨 Clinical Care Monitor")
