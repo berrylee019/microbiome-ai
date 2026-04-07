@@ -59,12 +59,12 @@ with st.sidebar:
         "🏠 서비스 홈", 
         "🔍 01. 연구 에이전트 (RAG)", 
         "📊 02. 환자 리포트 (NGS)", 
-        "📸 03. 비전 분석", 
+        "📸 03. 비전 분석 (배변/식단)", 
         "🚨 04. 케어 모니터링",
         "🔬 05. 내시경 AI 분석"
     ])
     st.markdown("---")
-    st.caption("AI-Powered Clinical Solution v1.7")
+    st.caption("AI-Powered Clinical Solution v1.8")
 
 # 4. 메인 콘텐츠
 if mode == "🏠 서비스 홈":
@@ -74,7 +74,7 @@ if mode == "🏠 서비스 홈":
     col1, col2 = st.columns(2)
     with col1:
         st.markdown('<div class="service-card"><h3>🔍 01. Research Agent</h3><p>논문 분석 및 임상 가설 생성</p></div>', unsafe_allow_html=True)
-        st.markdown('<div class="service-card"><h3>📸 03. Vision Guide</h3><p>배변/식단 이미지 패턴 분석</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="service-card"><h3>📸 03. Vision Guide</h3><p>배변/식단 이미지 멀티모달 분석</p></div>', unsafe_allow_html=True)
         st.markdown('<div class="service-card"><h3>🔬 05. Endoscopy AI</h3><p>내시경 용종/암 정밀 판별 보조</p></div>', unsafe_allow_html=True)
     with col2:
         st.markdown('<div class="service-card"><h3>📊 02. Insight Report</h3><p>NGS 데이터 시각화 및 RAW 분석</p></div>', unsafe_allow_html=True)
@@ -108,13 +108,30 @@ elif mode == "📊 02. 환자 리포트 (NGS)":
         if st.button("AI 시퀀싱 분석 대기열 추가"):
             st.success("✅ 분석 요청 완료! (현재 대기열 번호: #2026-0012)")
 
-elif mode == "📸 03. 비전 분석":
+elif mode == "📸 03. 비전 분석 (배변/식단)":
     st.header("📸 Microbiome Vision Guide")
+    st.write("환자가 제출한 사진을 바탕으로 브리스톨 척도 및 영양 상태를 분석합니다.")
+    
     c1, c2 = st.columns(2)
-    with c1: st.file_uploader("배변 사진", type=['jpg', 'png'], key="s")
-    with c2: st.file_uploader("식단 사진", type=['jpg', 'png'], key="f")
-    if st.button("패턴 분석 실행"):
-        st.success("분석 완료: 정상 범위 내 회복 중")
+    with c1:
+        st.subheader("💩 배변 사진 분석")
+        st.file_uploader("이미지 업로드", type=['jpg', 'png', 'jpeg'], key="stool_img")
+        st.camera_input("카메라 촬영", key="stool_cam")
+    
+    with c2:
+        st.subheader("🥗 식단 사진 분석")
+        st.file_uploader("이미지 업로드", type=['jpg', 'png', 'jpeg'], key="food_img")
+        st.camera_input("카메라 촬영", key="food_cam")
+    
+    if st.button("이미지 패턴 분석 실행"):
+        with st.spinner("AI가 멀티모달 패턴을 분석 중입니다..."):
+            time.sleep(2)
+            st.success("### ✅ 비전 분석 결과")
+            res_c1, res_c2 = st.columns(2)
+            with res_c1:
+                st.info("**[배변 분석]**\n- **브리스톨 척도:** 4단계 (정상)\n- **특이사항:** 수분 섭취 적정 수준 유지 중")
+            with res_c2:
+                st.warning("**[식단 분석]**\n- **주요 영양소:** 고탄수화물 위주 관찰\n- **권고 사항:** 식이섬유(채소류) 20% 증량 필요")
 
 elif mode == "🚨 04. 케어 모니터링":
     st.header("🚨 24/7 AI-driven Anomaly Detection")
@@ -122,13 +139,8 @@ elif mode == "🚨 04. 케어 모니터링":
     m1.metric("모니터링 대상", "45 명")
     m2.metric("고위험군 (High Risk)", "2 명", delta="1", delta_color="inverse")
     m3.metric("평균 통증 지수", "2.1", "-0.3")
-    st.markdown("""
-        <div style='background-color: #f1f5f9; padding: 15px; border-radius: 10px; margin-bottom: 20px;'>
-            <b>🔌 실시간 수집 소스:</b> <span class="data-source-tag">스마트 체온 패치</span> <span class="data-source-tag">웨어러블(활동량)</span>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("<div class='alert-card'><b>[K-104 환자]</b> 장폐색 의심 징후 감지</div>", unsafe_allow_html=True)
     st.line_chart(np.random.normal(36.5, 0.2, size=(24, 1)))
-    st.markdown("<div class='alert-card'><b>[K-104 환자]</b> 장폐색(Ileus) 의심 징후 감지</div>", unsafe_allow_html=True)
 
 elif mode == "🔬 05. 내시경 AI 분석":
     st.header("🔬 Endoscopy AI Diagnostic Assistant")
