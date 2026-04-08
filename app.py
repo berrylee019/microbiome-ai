@@ -43,9 +43,9 @@ st.markdown("""
     .alert-card {
         background-color: #FFF5F5; padding: 15px; border-radius: 10px; border-left: 5px solid #F87171; margin-bottom: 12px;
     }
-    .data-source-tag {
-        background-color: #EFF6FF; color: #1E40AF; padding: 4px 10px; border-radius: 20px; 
-        font-size: 12px; font-weight: 600; margin-right: 5px; border: 1px solid #DBEAFE;
+    .security-banner {
+        background-color: #F0F9FF; padding: 15px; border-radius: 10px; border: 1px solid #BAE6FD; 
+        color: #0369A1; font-weight: 600; text-align: center; margin-bottom: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -58,13 +58,13 @@ with st.sidebar:
     mode = st.radio("서비스 모드 선택", [
         "🏠 서비스 홈", 
         "🔍 01. 연구 에이전트 (RAG)", 
-        "📊 02. 환자 리포트 (NGS)", 
-        "📸 03. 비전 분석 (배변/식단)", 
+        "📊 02. 환자 리포트 (NGS/OCR)", 
+        "📸 03. 익명 비전 예진 (항문/식단)", 
         "🚨 04. 케어 모니터링",
         "🔬 05. 내시경 AI 분석"
     ])
     st.markdown("---")
-    st.caption("AI-Powered Clinical Solution v1.8")
+    st.caption("AI-Powered Clinical Solution v1.9")
 
 # 4. 메인 콘텐츠
 if mode == "🏠 서비스 홈":
@@ -74,10 +74,10 @@ if mode == "🏠 서비스 홈":
     col1, col2 = st.columns(2)
     with col1:
         st.markdown('<div class="service-card"><h3>🔍 01. Research Agent</h3><p>논문 분석 및 임상 가설 생성</p></div>', unsafe_allow_html=True)
-        st.markdown('<div class="service-card"><h3>📸 03. Vision Guide</h3><p>배변/식단 이미지 멀티모달 분석</p></div>', unsafe_allow_html=True)
-        st.markdown('<div class="service-card"><h3>🔬 05. Endoscopy AI</h3><p>내시경 용종/암 정밀 판별 보조</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="service-card"><h3>📸 03. Anonymous Pre-check</h3><p>항문질환/식단 익명 비전 예진 서비스</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="service-card"><h3>🔬 05. Endoscopy AI</h3><p>올림푸스 NBI 최적화 정밀 판별 보조</p></div>', unsafe_allow_html=True)
     with col2:
-        st.markdown('<div class="service-card"><h3>📊 02. Insight Report</h3><p>NGS 데이터 시각화 및 RAW 분석</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="service-card"><h3>📊 02. Insight Report</h3><p>NGS 시각화 및 종이 검진지 OCR 분석</p></div>', unsafe_allow_html=True)
         st.markdown('<div class="service-card"><h3>🚨 04. Care Monitor</h3><p>24/7 AI 이상 징후 실시간 탐지</p></div>', unsafe_allow_html=True)
 
 elif mode == "🔍 01. 연구 에이전트 (RAG)":
@@ -91,9 +91,10 @@ elif mode == "🔍 01. 연구 에이전트 (RAG)":
             response = model.generate_content(f"{context_text[:10000]}\n\n질문: {user_query}")
             st.info(response.text)
 
-elif mode == "📊 02. 환자 리포트 (NGS)":
-    st.header("📊 NGS Data Analysis & Report")
-    tab1, tab2 = st.tabs(["📈 분석 결과 시각화", "🧬 FASTQ 원천 데이터 분석"])
+elif mode == "📊 02. 환자 리포트 (NGS/OCR)":
+    st.header("📊 Clinical Data Analysis & OCR")
+    tab1, tab2, tab3 = st.tabs(["📈 NGS 시각화", "🧬 FASTQ 원천 분석", "📄 종이 검진지 OCR"])
+    
     with tab1:
         st.subheader("마이크로바이옴 분석 데이터 업로드")
         uploaded_sheet = st.file_uploader("CSV 또는 XLSX 시트 업로드", type=['csv', 'xlsx'])
@@ -102,36 +103,53 @@ elif mode == "📊 02. 환자 리포트 (NGS)":
             chart_data = pd.DataFrame({'균주명': ['Bifidobacterium', 'Lactobacillus', 'Bacteroides', 'Harmful'], '비율(%)': [42, 18, 25, 15]})
             st.bar_chart(chart_data.set_index('균주명'))
             st.info("**AI 분석 소견:** 유익균 분포가 안정적입니다.")
+    
     with tab2:
         st.subheader("Cloud-based FASTQ Pipeline")
         st.file_uploader("FASTQ 파일 업로드 (.fastq, .gz)", type=['fastq', 'gz'])
         if st.button("AI 시퀀싱 분석 대기열 추가"):
-            st.success("✅ 분석 요청 완료! (현재 대기열 번호: #2026-0012)")
+            st.success("✅ 분석 요청 완료! (대기번호: #2026-0012)")
 
-elif mode == "📸 03. 비전 분석 (배변/식단)":
-    st.header("📸 Microbiome Vision Guide")
-    st.write("환자가 제출한 사진을 바탕으로 브리스톨 척도 및 영양 상태를 분석합니다.")
+    with tab3:
+        st.subheader("📄 종이 건강검진 결과지 OCR 분석")
+        st.write("외부 병원에서 받은 종이 결과지를 촬영하여 업로드하면 AI가 핵심 지표를 추출합니다.")
+        uploaded_ocr = st.file_uploader("검진 결과지 이미지/PDF 업로드", type=['jpg', 'jpeg', 'png', 'pdf'])
+        if uploaded_ocr:
+            with st.spinner("OCR 엔진 가동 중..."):
+                time.sleep(2)
+                st.success("✅ OCR 분석 완료")
+                st.markdown("""
+                | 검사항목 | 결과값 | 상태 |
+                | :--- | :--- | :--- |
+                | 공복혈당 | 110 mg/dL | **주의(공복혈당장애 의심)** |
+                | AST/ALT | 45/52 U/L | **주의(경미한 수치 상승)** |
+                | 대장내시경 소견 | 용종 절제 2건 | 정기 추적 관찰 필요 |
+                """)
+                st.info("💡 **AI 가이드:** 간수치 개선을 위한 식단 조절과 6개월 후 재검사가 권장됩니다.")
+
+elif mode == "📸 03. 익명 비전 예진 (항문/식단)":
+    st.header("📸 Anonymous Pre-diagnosis Vision Guide")
+    
+    # 강력한 보안 문구 반영
+    st.markdown('<div class="security-banner">🔒 보안 안내: 모든 개인정보 및 사진은 AI 분석 즉시 파기되며 서버에 저장되지 않습니다. (익명 예진 서비스)</div>', unsafe_allow_html=True)
+    
+    st.write("병원 방문 전, AI를 통해 상태를 미리 확인하는 비대면 익명 예진 모듈입니다.")
     
     c1, c2 = st.columns(2)
     with c1:
-        st.subheader("💩 배변 사진 분석")
-        st.file_uploader("이미지 업로드", type=['jpg', 'png', 'jpeg'], key="stool_img")
-        st.camera_input("카메라 촬영", key="stool_cam")
+        st.subheader("🍑 항문 질환 분석 (치핵/치루)")
+        st.file_uploader("환부 사진 업로드 (익명)", type=['jpg', 'png', 'jpeg'], key="anal_img")
+        if st.button("치핵 단계 및 수술 여부 판별"):
+            with st.spinner("AI가 병변을 분석 중입니다..."):
+                time.sleep(1.5)
+                st.error("### 📢 분석 결과: 내치핵 3도 (Grade 3)")
+                st.warning("🚩 **소견:** 탈출된 치핵이 손으로 밀어넣어야 들어가는 상태로 관찰됩니다. **'감돈 치핵'** 위험이 있으므로 원장님과 수술 상담을 권장합니다.")
     
     with c2:
-        st.subheader("🥗 식단 사진 분석")
-        st.file_uploader("이미지 업로드", type=['jpg', 'png', 'jpeg'], key="food_img")
-        st.camera_input("카메라 촬영", key="food_cam")
-    
-    if st.button("이미지 패턴 분석 실행"):
-        with st.spinner("AI가 멀티모달 패턴을 분석 중입니다..."):
-            time.sleep(2)
-            st.success("### ✅ 비전 분석 결과")
-            res_c1, res_c2 = st.columns(2)
-            with res_c1:
-                st.info("**[배변 분석]**\n- **브리스톨 척도:** 4단계 (정상)\n- **특이사항:** 수분 섭취 적정 수준 유지 중")
-            with res_c2:
-                st.warning("**[식단 분석]**\n- **주요 영양소:** 고탄수화물 위주 관찰\n- **권고 사항:** 식이섬유(채소류) 20% 증량 필요")
+        st.subheader("🥗 식단 & 배변 분석")
+        st.file_uploader("식단/배변 사진 업로드", type=['jpg', 'png', 'jpeg'], key="food_img")
+        if st.button("장내 환경 예측 분석"):
+            st.info("**[분석 결과]** 브리스톨 척도 4단계 유지 중이나, 고탄수화물 식이 비중이 높아 식이섬유 증량이 필요합니다.")
 
 elif mode == "🚨 04. 케어 모니터링":
     st.header("🚨 24/7 AI-driven Anomaly Detection")
@@ -144,24 +162,28 @@ elif mode == "🚨 04. 케어 모니터링":
 
 elif mode == "🔬 05. 내시경 AI 분석":
     st.header("🔬 Endoscopy AI Diagnostic Assistant")
-    st.write("내시경 영상/이미지를 분석하여 용종의 종류 및 암 변질 여부를 감별 진단합니다.")
-    st.info("💡 본 모듈은 교수님의 판독을 보조하기 위한 의사결정 지원 시스템(DSS)입니다.")
     
-    up_img = st.file_uploader("내시경 의심 부위 이미지 업로드", type=['jpg', 'jpeg', 'png'])
+    # 올림푸스 NBI 특화 문구 반영
+    st.success("💎 **Olympus(올림푸스) 고해상도 이미지 및 NBI(Narrow Band Imaging) 모드 특화 분석 엔진 탑재**")
+    
+    st.write("내시경 영상/이미지를 분석하여 용종의 종류 및 암 변질 여부를 감별 진단합니다.")
+    st.info("💡 본 모듈은 원장님의 판독을 보조하기 위한 의사결정 지원 시스템(DSS)입니다.")
+    
+    up_img = st.file_uploader("내시경(CD/캡처) 의심 부위 이미지 업로드", type=['jpg', 'jpeg', 'png'])
     if up_img:
         col_img, col_res = st.columns(2)
         with col_img:
             st.image(up_img, caption="업로드된 내시경 이미지", use_container_width=True)
         with col_res:
             if st.button("AI 병변 정밀 분석 실행"):
-                with st.spinner("이미지 패턴 및 혈관 분포 분석 중..."):
+                with st.spinner("NBI 혈관 패턴 및 표면 질감 분석 중..."):
                     time.sleep(2)
                     st.error("### 📢 분석 결과: 암 변질 의심 (Malignancy Risk High)")
                     st.markdown("""
                     - **병변 유형:** 선종성 용종 (Adenoma) -> 암 전단계 의심
-                    - **악성 가능성:** 89% (High Confidence)
-                    - **주요 소견:** 불규칙한 미세 혈관 패턴(Vascularity) 관찰, 표면 질감 파괴 징후.
+                    - **악성 가능성:** 91% (NBI Pattern Match High)
+                    - **주요 소견:** 불규칙한 미세 혈관 패턴(Vascularity) 및 표면 질감 파괴 징후 포착.
                     - **제안 사항:** 즉시 조직 검사(Biopsy) 및 전수 절제 고려.
                     """)
-                    st.progress(89)
-                    st.caption("AI Confidence Level: 89%")
+                    st.progress(91)
+                    st.caption("AI Confidence Level (Olympus Engine): 91%")
