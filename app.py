@@ -151,6 +151,20 @@ elif mode == "📸 03. 익명 비전 예진 (항문/식단)":
         if st.button("장내 환경 예측 분석"):
             st.info("**[분석 결과]** 브리스톨 척도 4단계 유지 중이나, 고탄수화물 식이 비중이 높아 식이섬유 증량이 필요합니다.")
 
+# --- 03. 익명 비전 예진 (항문/식단) 섹션 하단 ---
+st.write("---")
+col_vision1, col_vision2 = st.columns(2)
+
+with col_vision1:
+    if st.button("📄 예진 결과 요약지 발행"):
+        st.success("✅ 환자용 예진 리포트가 생성되었습니다. (과금: 1,000원)")
+        # 가벼운 결과지 출력 로직
+
+with col_vision2:
+    if st.button("🏥 원장님 정밀 판독 및 예약 연동"):
+        st.balloons()
+        st.info("📨 원장님 PC로 환부 분석 데이터가 전송되었습니다. 환자 앱에 예약 화면이 활성화됩니다. (성공 보수 대상)")
+        
 elif mode == "🚨 04. 케어 모니터링":
     st.header("🚨 24/7 AI-driven Anomaly Detection")
     m1, m2, m3 = st.columns(3)
