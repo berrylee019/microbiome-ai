@@ -265,6 +265,6 @@ elif mode == "🔬 05. 내시경 AI 분석":
                         label="📥 영상 리포트 다운로드",
                         data=report_html,
                         file_name=f"AI_Video_Report_{time.strftime('%H%M%S')}.html",
-                        mime="text/html"
+                        mime="text/html",
                         help="다운로드 후 파일을 열어 '인쇄(PDF로 저장)'를 선택하세요."
                     )
