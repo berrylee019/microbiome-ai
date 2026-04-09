@@ -215,3 +215,56 @@ elif mode == "🔬 05. 내시경 AI 분석":
                     - **권고 사항:** 해당 구간 정지 화면(Freeze frame) 정밀 판독 후 절제 권장
                     """)
                     st.warning("⚠️ 원장님, 12초 지점의 혈관 확장 패턴을 확인해 주십시오.")
+                    
+# --- 리포트 발행 및 과금 섹션 시작 ---
+        st.write("---")
+        col_rpt1, col_rpt2 = st.columns([2, 1])
+        
+        with col_rpt1:
+            st.markdown("#### 📄 정밀 판독 리포트 발행")
+            st.caption("환자 상담 및 차트 보관용 고해상도 리포트를 생성합니다.")
+        
+        with col_rpt2:
+            # 리포트 발행 버튼 (모델 2: 건당 과금의 트리거)
+            if st.button("📝 리포트 발행 (3,000원)"):
+                # 1. 과금 로그 시뮬레이션 (세션 상태를 활용해 중복 과금 방지)
+                if 'report_count' not in st.session_state:
+                    st.session_state.report_count = 0
+                
+                # 시연용: 동일 환자/영상에 대해 재클릭 시 과금 제외 로직 언급
+                st.session_state.report_count += 1
+                
+                # 2. 리포트 생성 시간 및 데이터
+                report_time = time.strftime("%Y-%m-%d %H:%M:%S")
+                
+                st.toast("리포트가 생성되었습니다. (월말 정산 내역에 포함됩니다)")
+                
+                # 3. 리포트 UI (HTML)
+                report_html = f"""
+                <div style="border: 2px solid #1E3A8A; padding: 25px; border-radius: 12px; background-color: #ffffff; box-shadow: 2px 2px 12px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; border-bottom: 2px solid #1E3A8A; padding-bottom: 10px;">
+                        <h2 style="color: #1E3A8A; margin: 0;">AI 정밀 판독 결과 보고서</h2>
+                        <span style="font-size: 12px; color: #666;">장앤항외과 X MisaTech AI 협력 모델</span>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <p><b>■ 분석 일시:</b> {report_time}</p>
+                        <p><b>■ 판독 대상:</b> 내시경 영상 스트림 (Timestamp 00:12~00:18)</p>
+                        <p><b>■ AI 추정 병변:</b> <span style="color: #D32F2F; font-weight: bold;">무경성 톱니바퀴 모양 용종 (SSA/P)</span></p>
+                        <p><b>■ 판독 신뢰도:</b> <span style="color: #1E3A8A; font-weight: bold;">94.5%</span></p>
+                        <p><b>■ 종합 소견:</b> NBI 모드 분석 결과, 확장된 은와(crypt)와 불규칙한 미세혈관 패턴이 관찰되어 SSA/P 가능성이 매우 높음. 선종성 용종 대비 발견이 어려우나 암 변질 위험이 있으므로 즉시 절제를 권장함.</p>
+                    </div>
+                    <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #888;">
+                        본 리포트는 의사결정 보조용이며, 최종 진단 책임은 전문의에게 있습니다.
+                    </div>
+                </div>
+                """
+                st.markdown(report_html, unsafe_allow_html=True)
+                
+                # 4. PDF 저장 버튼 (SaaS 모델의 결과물 제공)
+                st.download_button(
+                    label="📥 리포트 PDF/HTML 다운로드",
+                    data=report_html,
+                    file_name=f"JangAndHang_AI_Report_{time.strftime('%H%M%S')}.html",
+                    mime="text/html",
+                    help="다운로드 후 파일을 열어 '인쇄(PDF로 저장)'를 선택하세요."
+                )
