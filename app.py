@@ -169,21 +169,49 @@ elif mode == "🔬 05. 내시경 AI 분석":
     st.write("내시경 영상/이미지를 분석하여 용종의 종류 및 암 변질 여부를 감별 진단합니다.")
     st.info("💡 본 모듈은 원장님의 판독을 보조하기 위한 의사결정 지원 시스템(DSS)입니다.")
     
-    up_img = st.file_uploader("내시경(CD/캡처) 의심 부위 이미지 업로드", type=['jpg', 'jpeg', 'png'])
-    if up_img:
-        col_img, col_res = st.columns(2)
-        with col_img:
-            st.image(up_img, caption="업로드된 내시경 이미지", use_container_width=True)
-        with col_res:
-            if st.button("AI 병변 정밀 분석 실행"):
-                with st.spinner("NBI 혈관 패턴 및 표면 질감 분석 중..."):
-                    time.sleep(2)
-                    st.error("### 📢 분석 결과: 암 변질 의심 (Malignancy Risk High)")
+# 이미지와 영상 업로드 탭 분리
+    tab_img, tab_vid = st.tabs(["📸 이미지 분석", "🎥 동영상 분석"])
+
+    with tab_img:
+        up_img = st.file_uploader("내시경 캡처 이미지 업로드", type=['jpg', 'jpeg', 'png'], key="endos_img")
+        if up_img:
+            col_img, col_res = st.columns(2)
+            with col_img:
+                st.image(up_img, caption="분석 대상 이미지", use_container_width=True)
+            with col_res:
+                if st.button("AI 이미지 정밀 분석 실행"):
+                    with st.spinner("이미지 패턴 및 혈관 분포 분석 중..."):
+                        time.sleep(2)
+                        st.error("### 📢 분석 결과: 암 변질 의심 (Malignancy Risk High)")
+                        st.markdown("- **병변 유형:** 선종성 용종 (Adenoma)\n- **악성 가능성:** 91%\n- **주요 소견:** 불규칙한 미세 혈관 패턴 및 표면 질감 파괴 징후 포착.")
+                        st.progress(91)
+
+    with tab_vid:
+        st.subheader("🎥 내시경 동영상 실시간 패턴 분석")
+        up_vid = st.file_uploader("내시경 영상 파일 업로드 (MP4, AVI, MOV)", type=['mp4', 'avi', 'mov'], key="endos_vid")
+        
+        if up_vid:
+            col_v, col_v_res = st.columns([1.5, 1])
+            with col_v:
+                st.video(up_vid)
+            with col_v_res:
+                if st.button("AI 동영상 프레임 분석 시작"):
+                    progress_bar = st.progress(0)
+                    status_text = st.empty()
+                    
+                    # 영상 프레임 분석 시뮬레이션
+                    for i in range(1, 101):
+                        time.sleep(0.05) # 시연용 속도
+                        progress_bar.progress(i)
+                        if i < 30: status_text.text(f"프레임 추출 중... {i}%")
+                        elif i < 70: status_text.text(f"NBI 혈관 패턴 대조 중... {i}%")
+                        else: status_text.text(f"이상 징후 구간(Timestamp) 특정 중... {i}%")
+                    
+                    st.success("✅ 영상 분석 완료")
                     st.markdown("""
-                    - **병변 유형:** 선종성 용종 (Adenoma) -> 암 전단계 의심
-                    - **악성 가능성:** 91% (NBI Pattern Match High)
-                    - **주요 소견:** 불규칙한 미세 혈관 패턴(Vascularity) 및 표면 질감 파괴 징후 포착.
-                    - **제안 사항:** 즉시 조직 검사(Biopsy) 및 전수 절제 고려.
+                    **[영상 분석 요약 보고서]**
+                    - **특이 구간 검출:** 00:12 ~ 00:15 (용종 의심)
+                    - **병변 유형:** 무경성 톱니바퀴 모양 용종 (SSA/P) 의심
+                    - **권고 사항:** 해당 구간 정지 화면(Freeze frame) 정밀 판독 후 절제 권장
                     """)
-                    st.progress(91)
-                    st.caption("AI Confidence Level (Olympus Engine): 91%")
+                    st.warning("⚠️ 원장님, 12초 지점의 혈관 확장 패턴을 확인해 주십시오.")
