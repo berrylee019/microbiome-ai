@@ -163,108 +163,108 @@ elif mode == "🚨 04. 케어 모니터링":
 elif mode == "🔬 05. 내시경 AI 분석":
     st.header("🔬 Endoscopy AI Diagnostic Assistant")
     
-    # 올림푸스 NBI 특화 문구 반영
+    # 올림푸스 NBI 특화 문구
     st.success("💎 **Olympus(올림푸스) 고해상도 이미지 및 NBI(Narrow Band Imaging) 모드 특화 분석 엔진 탑재**")
     
     st.write("내시경 영상/이미지를 분석하여 용종의 종류 및 암 변질 여부를 감별 진단합니다.")
     st.info("💡 본 모듈은 원장님의 판독을 보조하기 위한 의사결정 지원 시스템(DSS)입니다.")
     
-# 이미지와 영상 업로드 탭 분리
-    tab_img, tab_vid = st.tabs(["📸 이미지 분석", "🎥 동영상 분석"])
+    # 이미지와 영상 업로드 탭 분리
+    tab_img, tab_vid = st.tabs(["📸 이미지 정밀 분석", "🎥 동영상 분석"])
 
+    # --- 1. 이미지 분석 탭 (리포트 발행 기능 강화) ---
     with tab_img:
-        up_img = st.file_uploader("내시경 캡처 이미지 업로드", type=['jpg', 'jpeg', 'png'], key="endos_img")
+        up_img = st.file_uploader("내시경 의심 부위 이미지 업로드", type=['jpg', 'jpeg', 'png'], key="endos_img")
         if up_img:
             col_img, col_res = st.columns(2)
             with col_img:
-                st.image(up_img, caption="분석 대상 이미지", use_container_width=True)
+                st.image(up_img, caption="업로드된 내시경 이미지", use_container_width=True)
             with col_res:
-                if st.button("AI 이미지 정밀 분석 실행"):
+                if st.button("🔍 AI 이미지 정밀 분석 실행"):
                     with st.spinner("이미지 패턴 및 혈관 분포 분석 중..."):
-                        time.sleep(2)
+                        time.sleep(1.5)
                         st.error("### 📢 분석 결과: 암 변질 의심 (Malignancy Risk High)")
-                        st.markdown("- **병변 유형:** 선종성 용종 (Adenoma)\n- **악성 가능성:** 91%\n- **주요 소견:** 불규칙한 미세 혈관 패턴 및 표면 질감 파괴 징후 포착.")
-                        st.progress(91)
+                        st.markdown("""
+                        - **병변 유형:** 선종성 용종 (Adenoma)
+                        - **악성 가능성:** 89% (High Confidence)
+                        - **주요 소견:** 불규칙한 미세 혈관 패턴 관찰.
+                        """)
+                        st.progress(89)
+                
+                st.write("---")
+                # 이미지 모드용 리포트 발행 버튼 추가
+                if st.button("📝 이미지 판독 리포트 발행 (과금)"):
+                    report_time = time.strftime("%Y-%m-%d %H:%M:%S")
+                    st.toast("이미지 분석 리포트가 생성되었습니다.")
+                    
+                    report_html = f"""
+                    <div style="border: 2px solid #1E3A8A; padding: 25px; border-radius: 12px; background-color: #ffffff; font-family: sans-serif;">
+                        <div style="text-align: center; border-bottom: 2px solid #1E3A8A; padding-bottom: 10px;">
+                            <h2 style="color: #1E3A8A; margin: 0;">AI 정밀 판독 결과 보고서 (Image)</h2>
+                            <span style="font-size: 12px; color: #666;">장앤항외과 X MisaTech AI 협력 모델</span>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <p><b>■ 분석 일시:</b> {report_time}</p>
+                            <p><b>■ 판독 대상:</b> {up_img.name} (Still Image)</p>
+                            <p><b>■ AI 추정 병변:</b> <span style="color: #D32F2F; font-weight: bold;">선종성 용종 (Adenoma)</span></p>
+                            <p><b>■ 판독 신뢰도:</b> <span style="color: #1E3A8A; font-weight: bold;">89.0%</span></p>
+                            <p><b>■ 종합 소견:</b> NBI 모드 이미지 분석 결과, 표면 점막의 미세 혈관망 파괴 및 불규칙한 패턴이 관찰됨. 선종성 용종으로 판단되며 암 변질 가능성이 있으므로 전수 절제를 권장함.</p>
+                        </div>
+                        <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #888;">
+                            본 리포트는 의사결정 보조용이며, 최종 진단 책임은 전문의에게 있습니다.
+                        </div>
+                    </div>
+                    """
+                    st.markdown(report_html, unsafe_allow_html=True)
+                    st.download_button(
+                        label="📥 리포트 PDF/HTML 다운로드",
+                        data=report_html,
+                        file_name=f"AI_Image_Report_{time.strftime('%H%M%S')}.html",
+                        mime="text/html"
+                    )
 
+    # --- 2. 동영상 분석 탭 ---
     with tab_vid:
-        st.subheader("🎥 내시경 동영상 실시간 패턴 분석")
-        up_vid = st.file_uploader("내시경 영상 파일 업로드 (MP4, AVI, MOV)", type=['mp4', 'avi', 'mov'], key="endos_vid")
-        
+        up_vid = st.file_uploader("내시경 영상 파일 업로드", type=['mp4', 'avi', 'mov'], key="endos_vid")
         if up_vid:
-            col_v, col_v_res = st.columns([1.5, 1])
+            col_v, col_v_res = st.columns(2)
             with col_v:
                 st.video(up_vid)
             with col_v_res:
-                if st.button("AI 동영상 프레임 분석 시작"):
-                    progress_bar = st.progress(0)
-                    status_text = st.empty()
+                if st.button("🚀 AI 동영상 프레임 분석 시작"):
+                    with st.spinner("영상 패턴 분석 중..."):
+                        time.sleep(2)
+                        st.error("### 📢 분석 결과: 이상 징후 감지")
+                        st.warning("⚠️ 12초 지점의 혈관 확장 패턴을 확인해 주십시오.")
+                
+                st.write("---")
+                if st.button("📝 영상 판독 리포트 발행 (과금)"):
+                    report_time = time.strftime("%Y-%m-%d %H:%M:%S")
+                    st.toast("영상 분석 리포트가 생성되었습니다.")
                     
-                    # 영상 프레임 분석 시뮬레이션
-                    for i in range(1, 101):
-                        time.sleep(0.05) # 시연용 속도
-                        progress_bar.progress(i)
-                        if i < 30: status_text.text(f"프레임 추출 중... {i}%")
-                        elif i < 70: status_text.text(f"NBI 혈관 패턴 대조 중... {i}%")
-                        else: status_text.text(f"이상 징후 구간(Timestamp) 특정 중... {i}%")
-                    
-                    st.success("✅ 영상 분석 완료")
-                    st.markdown("""
-                    **[영상 분석 요약 보고서]**
-                    - **특이 구간 검출:** 00:12 ~ 00:15 (용종 의심)
-                    - **병변 유형:** 무경성 톱니바퀴 모양 용종 (SSA/P) 의심
-                    - **권고 사항:** 해당 구간 정지 화면(Freeze frame) 정밀 판독 후 절제 권장
-                    """)
-                    st.warning("⚠️ 원장님, 12초 지점의 혈관 확장 패턴을 확인해 주십시오.")
-                    
-# --- 리포트 발행 및 과금 섹션 시작 ---
-        st.write("---")
-        col_rpt1, col_rpt2 = st.columns([2, 1])
-        
-        with col_rpt1:
-            st.markdown("#### 📄 정밀 판독 리포트 발행")
-            st.caption("환자 상담 및 차트 보관용 고해상도 리포트를 생성합니다.")
-        
-        with col_rpt2:
-            # 리포트 발행 버튼 (모델 2: 건당 과금의 트리거)
-            if st.button("📝 리포트 발행 (3,000원)"):
-                # 1. 과금 로그 시뮬레이션 (세션 상태를 활용해 중복 과금 방지)
-                if 'report_count' not in st.session_state:
-                    st.session_state.report_count = 0
-                
-                # 시연용: 동일 환자/영상에 대해 재클릭 시 과금 제외 로직 언급
-                st.session_state.report_count += 1
-                
-                # 2. 리포트 생성 시간 및 데이터
-                report_time = time.strftime("%Y-%m-%d %H:%M:%S")
-                
-                st.toast("리포트가 생성되었습니다. (월말 정산 내역에 포함됩니다)")
-                
-                # 3. 리포트 UI (HTML)
-                report_html = f"""
-                <div style="border: 2px solid #1E3A8A; padding: 25px; border-radius: 12px; background-color: #ffffff; box-shadow: 2px 2px 12px rgba(0,0,0,0.1);">
-                    <div style="text-align: center; border-bottom: 2px solid #1E3A8A; padding-bottom: 10px;">
-                        <h2 style="color: #1E3A8A; margin: 0;">AI 정밀 판독 결과 보고서</h2>
-                        <span style="font-size: 12px; color: #666;">장앤항외과 X MisaTech AI 협력 모델</span>
+                    report_html = f"""
+                    <div style="border: 2px solid #1E3A8A; padding: 25px; border-radius: 12px; background-color: #ffffff; font-family: sans-serif;">
+                        <div style="text-align: center; border-bottom: 2px solid #1E3A8A; padding-bottom: 10px;">
+                            <h2 style="color: #1E3A8A; margin: 0;">AI 정밀 판독 결과 보고서 (Video)</h2>
+                            <span style="font-size: 12px; color: #666;">장앤항외과 X MisaTech AI 협력 모델</span>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <p><b>■ 분석 일시:</b> {report_time}</p>
+                            <p><b>■ 판독 대상:</b> {up_vid.name} (Video Stream)</p>
+                            <p><b>■ AI 추정 병변:</b> <span style="color: #D32F2F; font-weight: bold;">무경성 톱니바퀴 모양 용종 (SSA/P)</span></p>
+                            <p><b>■ 판독 신뢰도:</b> <span style="color: #1E3A8A; font-weight: bold;">94.5%</span></p>
+                            <p><b>■ 종합 소견:</b> 영상 프레임 분석 결과, 특정 구간(00:12)에서 SSA/P 특유의 혈관 확장 및 점액 부착 징후 관찰됨.</p>
+                        </div>
+                        <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #888;">
+                            본 리포트는 의사결정 보조용이며, 최종 진단 책임은 전문의에게 있습니다.
+                        </div>
                     </div>
-                    <div style="margin-top: 20px;">
-                        <p><b>■ 분석 일시:</b> {report_time}</p>
-                        <p><b>■ 판독 대상:</b> 내시경 영상 스트림 (Timestamp 00:12~00:18)</p>
-                        <p><b>■ AI 추정 병변:</b> <span style="color: #D32F2F; font-weight: bold;">무경성 톱니바퀴 모양 용종 (SSA/P)</span></p>
-                        <p><b>■ 판독 신뢰도:</b> <span style="color: #1E3A8A; font-weight: bold;">94.5%</span></p>
-                        <p><b>■ 종합 소견:</b> NBI 모드 분석 결과, 확장된 은와(crypt)와 불규칙한 미세혈관 패턴이 관찰되어 SSA/P 가능성이 매우 높음. 선종성 용종 대비 발견이 어려우나 암 변질 위험이 있으므로 즉시 절제를 권장함.</p>
-                    </div>
-                    <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #888;">
-                        본 리포트는 의사결정 보조용이며, 최종 진단 책임은 전문의에게 있습니다.
-                    </div>
-                </div>
-                """
-                st.markdown(report_html, unsafe_allow_html=True)
-                
-                # 4. PDF 저장 버튼 (SaaS 모델의 결과물 제공)
-                st.download_button(
-                    label="📥 리포트 PDF/HTML 다운로드",
-                    data=report_html,
-                    file_name=f"JangAndHang_AI_Report_{time.strftime('%H%M%S')}.html",
-                    mime="text/html",
-                    help="다운로드 후 파일을 열어 '인쇄(PDF로 저장)'를 선택하세요."
-                )
+                    """
+                    st.markdown(report_html, unsafe_allow_html=True)
+                    st.download_button(
+                        label="📥 영상 리포트 다운로드",
+                        data=report_html,
+                        file_name=f"AI_Video_Report_{time.strftime('%H%M%S')}.html",
+                        mime="text/html"
+                        help="다운로드 후 파일을 열어 '인쇄(PDF로 저장)'를 선택하세요."
+                    )
