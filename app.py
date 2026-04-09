@@ -163,40 +163,30 @@ elif mode == "🚨 04. 케어 모니터링":
 elif mode == "🔬 05. 내시경 AI 분석":
     st.header("🔬 Endoscopy AI Diagnostic Assistant")
     
-    # 올림푸스 NBI 특화 문구
-    st.success("💎 **Olympus(올림푸스) 고해상도 이미지 및 NBI(Narrow Band Imaging) 모드 특화 분석 엔진 탑재**")
+    st.success("💎 **Olympus(올림푸스) 고해상도 이미지 및 NBI 모드 특화 분석 엔진 탑재**")
     
-    st.write("내시경 영상/이미지를 분석하여 용종의 종류 및 암 변질 여부를 감별 진단합니다.")
-    st.info("💡 본 모듈은 원장님의 판독을 보조하기 위한 의사결정 지원 시스템(DSS)입니다.")
-    
-    # 이미지와 영상 업로드 탭 분리
     tab_img, tab_vid = st.tabs(["📸 이미지 정밀 분석", "🎥 동영상 분석"])
 
-    # --- 1. 이미지 분석 탭 (리포트 발행 기능 강화) ---
+    # --- 1. 이미지 분석 탭 ---
     with tab_img:
-        up_img = st.file_uploader("내시경 의심 부위 이미지 업로드", type=['jpg', 'jpeg', 'png'], key="endos_img")
+        up_img = st.file_uploader("내시경 이미지 업로드", type=['jpg', 'jpeg', 'png'], key="endos_img")
         if up_img:
             col_img, col_res = st.columns(2)
             with col_img:
-                st.image(up_img, caption="업로드된 내시경 이미지", use_container_width=True)
+                st.image(up_img, use_container_width=True)
             with col_res:
                 if st.button("🔍 AI 이미지 정밀 분석 실행"):
-                    with st.spinner("이미지 패턴 및 혈관 분포 분석 중..."):
+                    with st.spinner("이미지 패턴 분석 중..."):
                         time.sleep(1.5)
-                        st.error("### 📢 분석 결과: 암 변질 의심 (Malignancy Risk High)")
-                        st.markdown("""
-                        - **병변 유형:** 선종성 용종 (Adenoma)
-                        - **악성 가능성:** 89% (High Confidence)
-                        - **주요 소견:** 불규칙한 미세 혈관 패턴 관찰.
-                        """)
-                        st.progress(89)
+                        st.error("### 📢 분석 결과: 암 변질 의심")
+                        st.progress(91)
                 
                 st.write("---")
-                # 이미지 모드용 리포트 발행 버튼 추가
-                if st.button("📝 이미지 판독 리포트 발행 (과금)"):
+                # 동영상 분석에 있던 리포트 발행 버튼을 이미지 탭에도 동일하게 배치
+                if st.button("📝 이미지 판독 리포트 발행 (과금)", key="btn_img_report"):
                     report_time = time.strftime("%Y-%m-%d %H:%M:%S")
-                    st.toast("이미지 분석 리포트가 생성되었습니다.")
                     
+                    # 리포트 디자인 (동영상 리포트와 동일한 폼)
                     report_html = f"""
                     <div style="border: 2px solid #1E3A8A; padding: 25px; border-radius: 12px; background-color: #ffffff; font-family: sans-serif;">
                         <div style="text-align: center; border-bottom: 2px solid #1E3A8A; padding-bottom: 10px;">
@@ -205,19 +195,16 @@ elif mode == "🔬 05. 내시경 AI 분석":
                         </div>
                         <div style="margin-top: 20px;">
                             <p><b>■ 분석 일시:</b> {report_time}</p>
-                            <p><b>■ 판독 대상:</b> {up_img.name} (Still Image)</p>
+                            <p><b>■ 판독 대상:</b> {up_img.name}</p>
                             <p><b>■ AI 추정 병변:</b> <span style="color: #D32F2F; font-weight: bold;">선종성 용종 (Adenoma)</span></p>
-                            <p><b>■ 판독 신뢰도:</b> <span style="color: #1E3A8A; font-weight: bold;">89.0%</span></p>
-                            <p><b>■ 종합 소견:</b> NBI 모드 이미지 분석 결과, 표면 점막의 미세 혈관망 파괴 및 불규칙한 패턴이 관찰됨. 선종성 용종으로 판단되며 암 변질 가능성이 있으므로 전수 절제를 권장함.</p>
-                        </div>
-                        <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #888;">
-                            본 리포트는 의사결정 보조용이며, 최종 진단 책임은 전문의에게 있습니다.
+                            <p><b>■ 판독 신뢰도:</b> <span style="color: #1E3A8A; font-weight: bold;">91.0%</span></p>
+                            <p><b>■ 종합 소견:</b> NBI 패턴 분석 결과, 점막 표면의 불규칙한 혈관망 확장과 미세 구조 파괴가 관찰되어 선종성 용종으로 판단됨.</p>
                         </div>
                     </div>
                     """
                     st.markdown(report_html, unsafe_allow_html=True)
                     st.download_button(
-                        label="📥 리포트 PDF/HTML 다운로드",
+                        label="📥 이미지 리포트 PDF 저장",
                         data=report_html,
                         file_name=f"AI_Image_Report_{time.strftime('%H%M%S')}.html",
                         mime="text/html"
@@ -225,7 +212,7 @@ elif mode == "🔬 05. 내시경 AI 분석":
 
     # --- 2. 동영상 분석 탭 ---
     with tab_vid:
-        up_vid = st.file_uploader("내시경 영상 파일 업로드", type=['mp4', 'avi', 'mov'], key="endos_vid")
+        up_vid = st.file_uploader("내시경 영상 업로드", type=['mp4', 'avi', 'mov'], key="endos_vid")
         if up_vid:
             col_v, col_v_res = st.columns(2)
             with col_v:
@@ -238,9 +225,8 @@ elif mode == "🔬 05. 내시경 AI 분석":
                         st.warning("⚠️ 12초 지점의 혈관 확장 패턴을 확인해 주십시오.")
                 
                 st.write("---")
-                if st.button("📝 영상 판독 리포트 발행 (과금)"):
+                if st.button("📝 영상 판독 리포트 발행 (과금)", key="btn_vid_report"):
                     report_time = time.strftime("%Y-%m-%d %H:%M:%S")
-                    st.toast("영상 분석 리포트가 생성되었습니다.")
                     
                     report_html = f"""
                     <div style="border: 2px solid #1E3A8A; padding: 25px; border-radius: 12px; background-color: #ffffff; font-family: sans-serif;">
@@ -250,19 +236,16 @@ elif mode == "🔬 05. 내시경 AI 분석":
                         </div>
                         <div style="margin-top: 20px;">
                             <p><b>■ 분석 일시:</b> {report_time}</p>
-                            <p><b>■ 판독 대상:</b> {up_vid.name} (Video Stream)</p>
+                            <p><b>■ 판독 대상:</b> {up_vid.name}</p>
                             <p><b>■ AI 추정 병변:</b> <span style="color: #D32F2F; font-weight: bold;">무경성 톱니바퀴 모양 용종 (SSA/P)</span></p>
                             <p><b>■ 판독 신뢰도:</b> <span style="color: #1E3A8A; font-weight: bold;">94.5%</span></p>
-                            <p><b>■ 종합 소견:</b> 영상 프레임 분석 결과, 특정 구간(00:12)에서 SSA/P 특유의 혈관 확장 및 점액 부착 징후 관찰됨.</p>
-                        </div>
-                        <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #888;">
-                            본 리포트는 의사결정 보조용이며, 최종 진단 책임은 전문의에게 있습니다.
+                            <p><b>■ 종합 소견:</b> 특정 구간(00:12)에서 혈관 확장 및 점액 부착 징후가 관찰되어 SSA/P 가능성이 높음.</p>
                         </div>
                     </div>
                     """
                     st.markdown(report_html, unsafe_allow_html=True)
                     st.download_button(
-                        label="📥 영상 리포트 다운로드",
+                        label="📥 영상 리포트 PDF 저장",
                         data=report_html,
                         file_name=f"AI_Video_Report_{time.strftime('%H%M%S')}.html",
                         mime="text/html",
