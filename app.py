@@ -106,7 +106,6 @@ if view_mode == "📱 환자 (모바일 예진)":
 
 # [원장님 모드 시연 화면]
 else:
-    # 실시간 예약 알림 팝업
     if st.session_state.get('new_reservation'):
         st.toast(f"🚨 [신규 예약] {st.session_state.patient_status} 환자가 발생했습니다!", icon="🚨")
         st.sidebar.error(f"🚨 실시간 알림: {st.session_state.patient_status} 예약")
@@ -133,29 +132,44 @@ else:
             if user_query:
                 try:
                     with st.spinner("논문을 분석하여 답변을 생성 중입니다..."):
-                        # 모델 이름을 'models/gemini-1.5-flash'로 명확히 지정하여 NotFound 방지
                         model = genai.GenerativeModel('models/gemini-2.5-flash')
                         response = model.generate_content(f"당신은 전문 의학 연구원입니다. 다음 내용을 바탕으로 질문에 답하세요:\n\n{context_text[:15000]}\n\n질문: {user_query}")
                         st.markdown("### 📝 분석 결과")
                         st.info(response.text)
                 except Exception as e:
                     st.error(f"❌ 분석 중 오류가 발생했습니다: {e}")
-                    st.warning("API 키 설정을 확인하거나 잠시 후 다시 시도해 주세요.")
 
     elif mode == "📊 02. 환자 리포트 (NGS/OCR)":
         st.header("📊 Clinical Data Analysis & OCR")
         tab1, tab2 = st.tabs(["📈 NGS 시각화", "📄 종이 검진지 OCR"])
         
         with tab1:
-            st.subheader("마이크로바이옴 분석")
+            st.subheader("🧬 마이크로바이옴 정밀 분석")
+            # NGS 데이터 업로드 버튼 추가 (CSV/XLSX)
+            up_ngs = st.file_uploader("검사 수탁 기관의 NGS 데이터 업로드 (CSV, XLSX)", type=['csv', 'xlsx'])
+            
+            if up_ngs:
+                st.success(f"✅ {up_ngs.name} 데이터 로드 완료")
+                # 시연용 샘플 차트 (데이터 업로드 시 시각화되는 척!)
+                chart_data = pd.DataFrame(
+                    np.random.rand(5, 1),
+                    index=['Bacteroidetes', 'Firmicutes', 'Proteobacteria', 'Actinobacteria', 'Others'],
+                    columns=['Distribution']
+                )
+                st.bar_chart(chart_data)
+                
             if st.button("📄 장내 미생물 정밀 분석 결과지 발행"):
-                st.success("✅ 고해상도 리포트 생성 완료 (과금 대상)")
+                with st.spinner("데이터 기반 AI 리포트 생성 중..."):
+                    time.sleep(1.5)
+                st.success("✅ 고해상도 프리미엄 리포트 생성 완료 (비급여 청구 대상)")
         
         with tab2:
             st.subheader("📄 종이 건강검진 결과지 OCR")
             up_ocr = st.file_uploader("이미지 업로드", type=['jpg', 'png', 'pdf'])
             if up_ocr:
-                st.success("✅ OCR 분석 완료")
+                st.info("🔍 이미지에서 텍스트를 추출하고 있습니다...")
+                time.sleep(1)
+                st.success("✅ OCR 분석 완료: 데이터가 환자 차트에 자동 연동되었습니다.")
 
     elif mode == "📸 03. 익명 비전 예진 (항문/식단)":
         st.header("📸 Anonymous Pre-diagnosis Vision Guide")
@@ -191,20 +205,17 @@ else:
         st.header("🔬 Endoscopy AI Diagnostic Assistant")
         st.success("💎 **Olympus NBI 모드 특화 분석 엔진 탑재**")
         
-        # 이미지 업로드
         up_img = st.file_uploader("📸 내시경 이미지 업로드", type=['jpg', 'png'])
         if up_img:
             st.image(up_img, width=400, caption="업로드된 내시경 이미지")
             
-        # 영상 업로드
         up_vid = st.file_uploader("🎥 내시경 동영상 업로드 (MP4/MOV)", type=['mp4', 'mov', 'avi'])
         if up_vid:
             st.video(up_vid)
-            st.info("📽️ AI가 영상 프레임을 실시간 스캔하여 이상 병변을 탐지합니다.")
             
         if up_img or up_vid:
             if st.button("📝 내시경 정밀 판독 리포트 발행 (과금)"):
                 with st.spinner("AI 정밀 판독 리포트 생성 중..."):
                     time.sleep(1.5)
                 st.write("---")
-                st.success("📄 공식 AI 판독 보고서가 생성되었습니다. (건당 과금 모델)")
+                st.success("📄 공식 AI 판독 보고서가 생성되었습니다.")
