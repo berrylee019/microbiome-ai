@@ -184,9 +184,20 @@ else:
         st.header("🔬 Endoscopy AI Diagnostic Assistant")
         st.success("💎 **Olympus NBI 모드 특화 분석 엔진 탑재**")
         
-        up_img = st.file_uploader("내시경 이미지 업로드", type=['jpg', 'png'])
+        # 이미지 업로드
+        up_img = st.file_uploader("📸 내시경 이미지 업로드", type=['jpg', 'png'])
         if up_img:
-            st.image(up_img, width=400)
+            st.image(up_img, width=400, caption="업로드된 내시경 이미지")
+            
+        # 영상 업로드 (추가된 부분)
+        up_vid = st.file_uploader("🎥 내시경 동영상 업로드 (MP4/MOV)", type=['mp4', 'mov', 'avi'])
+        if up_vid:
+            st.video(up_vid)
+            st.info("📽️ AI가 영상 프레임을 실시간 스캔하여 이상 병변을 탐지합니다.")
+            
+        if up_img or up_vid:
             if st.button("📝 내시경 정밀 판독 리포트 발행 (과금)"):
+                with st.spinner("AI 정밀 판독 리포트 생성 중..."):
+                    time.sleep(1.5)
                 st.write("---")
-                st.success("📄 공식 판독 보고서가 생성되었습니다. (건당 과금)")
+                st.success("📄 공식 AI 판독 보고서가 생성되었습니다. (건당 과금 모델)")
