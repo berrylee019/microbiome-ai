@@ -50,11 +50,10 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. 사이드바 - 시연 모드 및 내비게이션
+# 3. 사이드바 설정
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/2864/2864248.png", width=60)
     st.title("MisaTech AI")
-    
     st.markdown("---")
     view_mode = st.sidebar.radio(
         "🕹️ 시연 시나리오 선택", 
@@ -75,9 +74,8 @@ with st.sidebar:
     else:
         mode = "👤 환자 전용 예진창"
         st.info("📱 환자 휴대폰 화면 시연 중")
-    
     st.markdown("---")
-    st.caption("AI-Powered Clinical Solution v1.9")
+    st.caption("AI-Powered Clinical Solution v1.95")
 
 # 4. 메인 콘텐츠 로직
 
@@ -89,6 +87,8 @@ if view_mode == "📱 환자 (모바일 예진)":
     with st.container(border=True):
         st.subheader("📸 증상 사진 및 문진")
         up_file = st.file_uploader("증상 부위 사진 업로드 (익명)", type=['jpg','png','jpeg'])
+        if up_file:
+            st.image(up_file, width=300)
         st.text_area("현재 겪고 계신 불편함을 적어주세요.", placeholder="예: 배변 시 통증이 있고 선홍색 피가 납니다.")
         
         if st.button("🚀 AI 분석 및 전문의 연결"):
@@ -96,10 +96,8 @@ if view_mode == "📱 환자 (모바일 예진)":
                 time.sleep(2)
                 st.session_state.new_reservation = True
                 st.session_state.patient_status = "치핵 3기 의심"
-            
             st.error("### 📢 분석 결과: 내치핵 3도 (Grade 3)")
             st.warning("🏥 **장앤항외과 원장님**께 데이터를 전송하고 우선 진료 예약을 진행하시겠습니까?")
-            
             if st.button("📅 즉시 진료 예약하기"):
                 st.balloons()
                 st.success("🎉 예약 신청 완료! 원장님 화면으로 데이터가 전송되었습니다.")
@@ -113,7 +111,6 @@ else:
     if mode == "🏠 서비스 홈":
         st.markdown('<p class="main-title">AI Microbiome Clinical Suite</p>', unsafe_allow_html=True)
         st.markdown('<p class="sub-title">대장항문학 전문의를 위한 올인원 AI 플랫폼</p>', unsafe_allow_html=True)
-        
         col1, col2 = st.columns(2)
         with col1:
             st.markdown('<div class="service-card"><h3>🔍 01. Research Agent</h3><p>논문 분석 및 임상 가설 생성</p></div>', unsafe_allow_html=True)
@@ -133,42 +130,27 @@ else:
                 try:
                     with st.spinner("논문을 분석하여 답변을 생성 중입니다..."):
                         model = genai.GenerativeModel('models/gemini-2.5-flash')
-                        response = model.generate_content(f"당신은 전문 의학 연구원입니다. 다음 내용을 바탕으로 질문에 답하세요:\n\n{context_text[:15000]}\n\n질문: {user_query}")
+                        response = model.generate_content(f"의학 연구원으로서 답변하세요:\n\n{context_text[:15000]}\n\n질문: {user_query}")
                         st.markdown("### 📝 분석 결과")
                         st.info(response.text)
                 except Exception as e:
-                    st.error(f"❌ 분석 중 오류가 발생했습니다: {e}")
+                    st.error(f"❌ 분석 중 오류: {e}")
 
     elif mode == "📊 02. 환자 리포트 (NGS/OCR)":
         st.header("📊 Clinical Data Analysis & OCR")
         tab1, tab2 = st.tabs(["📈 NGS 시각화", "📄 종이 검진지 OCR"])
-        
         with tab1:
             st.subheader("🧬 마이크로바이옴 정밀 분석")
-            # NGS 데이터 업로드 버튼 추가 (CSV/XLSX)
-            up_ngs = st.file_uploader("검사 수탁 기관의 NGS 데이터 업로드 (CSV, XLSX)", type=['csv', 'xlsx'])
-            
+            up_ngs = st.file_uploader("NGS 데이터 업로드 (CSV, XLSX)", type=['csv', 'xlsx'])
             if up_ngs:
                 st.success(f"✅ {up_ngs.name} 데이터 로드 완료")
-                # 시연용 샘플 차트 (데이터 업로드 시 시각화되는 척!)
-                chart_data = pd.DataFrame(
-                    np.random.rand(5, 1),
-                    index=['Bacteroidetes', 'Firmicutes', 'Proteobacteria', 'Actinobacteria', 'Others'],
-                    columns=['Distribution']
-                )
-                st.bar_chart(chart_data)
-                
+                st.bar_chart(pd.DataFrame(np.random.rand(5, 1), index=['B1','B2','B3','B4','B5'], columns=['Distribution']))
             if st.button("📄 장내 미생물 정밀 분석 결과지 발행"):
-                with st.spinner("데이터 기반 AI 리포트 생성 중..."):
-                    time.sleep(1.5)
                 st.success("✅ 고해상도 프리미엄 리포트 생성 완료 (비급여 청구 대상)")
-        
         with tab2:
             st.subheader("📄 종이 건강검진 결과지 OCR")
             up_ocr = st.file_uploader("이미지 업로드", type=['jpg', 'png', 'pdf'])
             if up_ocr:
-                st.info("🔍 이미지에서 텍스트를 추출하고 있습니다...")
-                time.sleep(1)
                 st.success("✅ OCR 분석 완료: 데이터가 환자 차트에 자동 연동되었습니다.")
 
     elif mode == "📸 03. 익명 비전 예진 (항문/식단)":
@@ -178,23 +160,34 @@ else:
         c1, c2 = st.columns(2)
         with c1:
             st.subheader("🍑 항문 질환 분석")
-            if st.button("치핵 단계 및 수술 여부 판별"):
+            up_anus = st.file_uploader("항문 증상 사진 업로드", type=['jpg','png','jpeg'], key="anus_up")
+            if up_anus:
+                st.image(up_anus, width=250)
+            if st.button("🔍 치핵 단계 및 수술 여부 판별"):
+                with st.spinner("Vision AI 판독 중..."):
+                    time.sleep(1.5)
                 st.error("### 📢 분석 결과: 내치핵 3도 (Grade 3)")
+                st.caption("※ 본 결과는 예진용이며, 전문의의 진료가 반드시 필요합니다.")
         
         with c2:
             st.subheader("🥗 식단 & 배변 분석")
-            if st.button("장내 환경 예측 분석"):
-                st.info("**[분석 결과]** 식이섬유 증량이 필요합니다.")
+            up_diet = st.file_uploader("식단 또는 배변 사진 업로드", type=['jpg','png','jpeg'], key="diet_up")
+            if up_diet:
+                st.image(up_diet, width=250)
+            if st.button("🔍 장내 환경 예측 분석"):
+                with st.spinner("영양/배변 데이터 분석 중..."):
+                    time.sleep(1.5)
+                st.info("**[분석 결과]** 고탄수화물 식이 감지. 식이섬유 증량이 필요합니다.")
 
         st.write("---")
         col_v1, col_v2 = st.columns(2)
         with col_v1:
             if st.button("📲 예진 데이터 환자용 전송"):
-                st.info("📨 환자의 휴대폰으로 예진 요약본이 전송되었습니다.")
+                st.info("📨 환자의 휴대폰으로 예진 요약본 및 내원 권고 메시지가 전송되었습니다.")
         with col_v2:
             if st.button("🏥 원장님 정밀 판독 및 예약 연동"):
                 st.balloons()
-                st.success("📨 원장님 PC로 전송 완료! 예약 화면이 활성화되었습니다.")
+                st.success("📨 원장님 PC 진료 차트로 전송 완료!")
 
     elif mode == "🚨 04. 케어 모니터링":
         st.header("🚨 24/7 AI-driven Anomaly Detection")
@@ -204,18 +197,9 @@ else:
     elif mode == "🔬 05. 내시경 AI 분석":
         st.header("🔬 Endoscopy AI Diagnostic Assistant")
         st.success("💎 **Olympus NBI 모드 특화 분석 엔진 탑재**")
-        
         up_img = st.file_uploader("📸 내시경 이미지 업로드", type=['jpg', 'png'])
         if up_img:
-            st.image(up_img, width=400, caption="업로드된 내시경 이미지")
-            
-        up_vid = st.file_uploader("🎥 내시경 동영상 업로드 (MP4/MOV)", type=['mp4', 'mov', 'avi'])
-        if up_vid:
-            st.video(up_vid)
-            
-        if up_img or up_vid:
+            st.image(up_img, width=400)
+        if up_img:
             if st.button("📝 내시경 정밀 판독 리포트 발행 (과금)"):
-                with st.spinner("AI 정밀 판독 리포트 생성 중..."):
-                    time.sleep(1.5)
-                st.write("---")
                 st.success("📄 공식 AI 판독 보고서가 생성되었습니다.")
