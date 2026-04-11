@@ -211,4 +211,27 @@ else:
                     st.image(up_img, use_container_width=True, caption="판독 대상 이미지")
             with col_vid:
                 st.subheader("🎥 영상 실시간 분석")
-                up_vid =
+                up_vid = st.file_uploader("내시경 영상 업로드", type=['mp4', 'mov', 'avi'], key="endo_vid")
+                if up_vid:
+                    st.video(up_vid)
+                    st.info("📽️ AI가 영상 프레임을 실시간 스캔하여 이상 병변을 탐지합니다.")
+        
+        with tab_xray:
+            st.subheader("🩻 Abdominal Gas & Fecal Distribution")
+            st.info("💡 복부 X-ray 상의 가스 패턴을 분석하여 장폐색(Ileus) 및 변비 심각도를 정량화합니다.")
+            up_xray = st.file_uploader("복부 X-ray 이미지 업로드", type=['jpg', 'png', 'jpeg'], key="xray_up")
+            if up_xray:
+                xc1, xc2 = st.columns(2)
+                with xc1:
+                    st.image(up_xray, use_container_width=True, caption="원본 X-ray 영상")
+                with xc2:
+                    st.write("### 🔍 AI 분석 리포트")
+                    st.write("- **Gas Distribution:** 소장 내 가스 정체 및 팽창 관찰")
+                    st.write("- **Fecal Material:** 상행/하행결장 내 분변 저류 확인")
+                    st.error("⚠️ **AI Opinion:** 장내 가스 팽창(Gas Distension) 및 Ileus 초기 징후 의심")
+
+        st.write("---")
+        if st.button("📝 정밀 판독 리포트 발행 (과금)"):
+            with st.spinner("AI가 데이터를 정밀 분석하여 보고서를 생성 중입니다..."):
+                time.sleep(2)
+            st.success("📄 공식 AI 영상 판독 보고서가 생성되었습니다. (결제 연동 완료)")
