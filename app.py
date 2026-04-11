@@ -47,6 +47,12 @@ st.markdown("""
         background-color: #F0F9FF; padding: 15px; border-radius: 10px; border: 1px solid #BAE6FD; 
         color: #0369A1; font-weight: 600; text-align: center; margin-bottom: 20px;
     }
+    /* 하드웨어 연동 안내 문구 스타일 */
+    .hardware-info {
+        background-color: #F8FAFC; padding: 20px; border-radius: 12px; border: 1px solid #E2E8F0;
+        color: #475569; font-size: 15px; line-height: 1.6; text-align: center;
+        margin-top: 25px; margin-bottom: 10px; width: 80%; margin-left: auto; margin-right: auto;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -75,7 +81,7 @@ with st.sidebar:
         mode = "👤 환자 전용 예진창"
         st.info("📱 환자 휴대폰 화면 시연 중")
     st.markdown("---")
-    st.caption("AI-Powered Clinical Solution v1.95")
+    st.caption("AI-Powered Clinical Solution v1.99 (Final Polish)")
 
 # 4. 메인 콘텐츠 로직
 
@@ -167,7 +173,6 @@ else:
                 with st.spinner("Vision AI 판독 중..."):
                     time.sleep(1.5)
                 st.error("### 📢 분석 결과: 내치핵 3도 (Grade 3)")
-                st.caption("※ 본 결과는 예진용이며, 전문의의 진료가 반드시 필요합니다.")
         
         with c2:
             st.subheader("🥗 식단 & 배변 분석")
@@ -192,7 +197,18 @@ else:
     elif mode == "🚨 04. 케어 모니터링":
         st.header("🚨 24/7 AI-driven Anomaly Detection")
         st.markdown("<div class='alert-card'><b>[K-104 환자]</b> 장폐색 의심 징후 감지</div>", unsafe_allow_html=True)
+        
+        # 가독성을 위해 그래프 주변 여백 살짝 확보
+        st.write("") 
         st.line_chart(np.random.normal(36.5, 0.2, size=(24, 1)))
+        
+        # --- 그래프 아래 중앙 부분에 하드웨어 연동 안내 문구 추가 ---
+        st.markdown("""
+            <div class="hardware-info">
+                저희 플랫폼은 특정 장비만 고집하지 않습니다. 표준 의료 데이터 규격(HL7/FHIR)을 준수하기 때문에, 병원에서 이미 사용 중인 모니터링 장비나 시중에 나온 검증된 웨어러블 기기들과 유연하게 연동됩니다. 원장님은 그저 화면에서 분석 결과만 확인하시면 됩니다.<br><br>
+                현재 국내외 유명 웨어러블 기업들(예: 에이티센스, 스카이랩스 등)의 기기와 연동 테스트를 마쳤으며, 원장님이 선호하시는 장비가 있다면 맞춤형 커스터마이징도 가능합니다.
+            </div>
+            """, unsafe_allow_html=True)
 
     elif mode == "🔬 05. 내시경 AI 분석":
         st.header("🔬 Endoscopy AI Diagnostic Assistant")
