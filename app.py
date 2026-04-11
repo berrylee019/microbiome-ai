@@ -196,26 +196,19 @@ else:
             """, unsafe_allow_html=True)
 
     elif mode == "🔬 05. 내시경 AI 분석":
-        st.header("🔬 Endoscopy AI Diagnostic Assistant")
-        st.success("💎 **Olympus NBI 모드 특화 분석 엔진 탑재**")
+        st.header("🔬 Advanced Medical Imaging AI")
+        st.success("💎 **Olympus NBI 내시경 & 복부 X-ray 가스 분석 통합 엔진**")
         
-        col_img, col_vid = st.columns(2)
+        # 내시경과 X-ray를 탭으로 분리
+        tab_endo, tab_xray = st.tabs(["🎥 내시경 분석", "🩻 복부 X-ray 가스 분석"])
         
-        with col_img:
-            st.subheader("📸 내시경 이미지 분석")
-            up_img = st.file_uploader("정지 화면 업로드", type=['jpg', 'png', 'jpeg'], key="endo_img")
-            if up_img:
-                st.image(up_img, use_container_width=True, caption="판독 대상 이미지")
-        
-        with col_vid:
-            st.subheader("🎥 내시경 동영상 분석")
-            up_vid = st.file_uploader("내시경 영상 업로드", type=['mp4', 'mov', 'avi'], key="endo_vid")
-            if up_vid:
-                st.video(up_vid)
-                st.info("📽️ AI가 영상 프레임을 실시간 스캔하여 이상 병변을 탐지합니다.")
-            
-        st.write("---")
-        if st.button("📝 내시경 정밀 판독 리포트 발행 (과금)"):
-            with st.spinner("AI가 영상을 정밀 분석하여 보고서를 생성 중입니다..."):
-                time.sleep(2)
-            st.success("📄 공식 AI 판독 보고서가 생성되었습니다. (결제 연동 완료)")
+        with tab_endo:
+            col_img, col_vid = st.columns(2)
+            with col_img:
+                st.subheader("📸 정지 화면 분석")
+                up_img = st.file_uploader("내시경 이미지 업로드", type=['jpg', 'png', 'jpeg'], key="endo_img")
+                if up_img:
+                    st.image(up_img, use_container_width=True, caption="판독 대상 이미지")
+            with col_vid:
+                st.subheader("🎥 영상 실시간 분석")
+                up_vid =
