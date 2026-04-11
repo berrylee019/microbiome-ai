@@ -134,7 +134,7 @@ else:
                 try:
                     with st.spinner("논문을 분석하여 답변을 생성 중입니다..."):
                         # 모델 이름을 'models/gemini-1.5-flash'로 명확히 지정하여 NotFound 방지
-                        model = genai.GenerativeModel('models/gemini-1.5-flash')
+                        model = genai.GenerativeModel('models/gemini-2.5-flash')
                         response = model.generate_content(f"당신은 전문 의학 연구원입니다. 다음 내용을 바탕으로 질문에 답하세요:\n\n{context_text[:15000]}\n\n질문: {user_query}")
                         st.markdown("### 📝 분석 결과")
                         st.info(response.text)
