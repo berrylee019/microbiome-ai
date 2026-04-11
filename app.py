@@ -47,7 +47,6 @@ st.markdown("""
         background-color: #F0F9FF; padding: 15px; border-radius: 10px; border: 1px solid #BAE6FD; 
         color: #0369A1; font-weight: 600; text-align: center; margin-bottom: 20px;
     }
-    /* 하드웨어 연동 안내 문구 스타일 */
     .hardware-info {
         background-color: #F8FAFC; padding: 20px; border-radius: 12px; border: 1px solid #E2E8F0;
         color: #475569; font-size: 15px; line-height: 1.6; text-align: center;
@@ -81,7 +80,7 @@ with st.sidebar:
         mode = "👤 환자 전용 예진창"
         st.info("📱 환자 휴대폰 화면 시연 중")
     st.markdown("---")
-    st.caption("AI-Powered Clinical Solution v1.99 (Final Polish)")
+    st.caption("AI-Powered Clinical Solution v2.0")
 
 # 4. 메인 콘텐츠 로직
 
@@ -170,8 +169,6 @@ else:
             if up_anus:
                 st.image(up_anus, width=250)
             if st.button("🔍 치핵 단계 및 수술 여부 판별"):
-                with st.spinner("Vision AI 판독 중..."):
-                    time.sleep(1.5)
                 st.error("### 📢 분석 결과: 내치핵 3도 (Grade 3)")
         
         with c2:
@@ -180,29 +177,17 @@ else:
             if up_diet:
                 st.image(up_diet, width=250)
             if st.button("🔍 장내 환경 예측 분석"):
-                with st.spinner("영양/배변 데이터 분석 중..."):
-                    time.sleep(1.5)
                 st.info("**[분석 결과]** 고탄수화물 식이 감지. 식이섬유 증량이 필요합니다.")
 
         st.write("---")
-        col_v1, col_v2 = st.columns(2)
-        with col_v1:
-            if st.button("📲 예진 데이터 환자용 전송"):
-                st.info("📨 환자의 휴대폰으로 예진 요약본 및 내원 권고 메시지가 전송되었습니다.")
-        with col_v2:
-            if st.button("🏥 원장님 정밀 판독 및 예약 연동"):
-                st.balloons()
-                st.success("📨 원장님 PC 진료 차트로 전송 완료!")
+        if st.button("🏥 원장님 정밀 판독 및 예약 연동"):
+            st.balloons()
+            st.success("📨 원장님 PC 진료 차트로 전송 완료!")
 
     elif mode == "🚨 04. 케어 모니터링":
         st.header("🚨 24/7 AI-driven Anomaly Detection")
         st.markdown("<div class='alert-card'><b>[K-104 환자]</b> 장폐색 의심 징후 감지</div>", unsafe_allow_html=True)
-        
-        # 가독성을 위해 그래프 주변 여백 살짝 확보
-        st.write("") 
         st.line_chart(np.random.normal(36.5, 0.2, size=(24, 1)))
-        
-        # --- 그래프 아래 중앙 부분에 하드웨어 연동 안내 문구 추가 ---
         st.markdown("""
             <div class="hardware-info">
                 저희 플랫폼은 특정 장비만 고집하지 않습니다. 표준 의료 데이터 규격(HL7/FHIR)을 준수하기 때문에, 병원에서 이미 사용 중인 모니터링 장비나 시중에 나온 검증된 웨어러블 기기들과 유연하게 연동됩니다. 원장님은 그저 화면에서 분석 결과만 확인하시면 됩니다.<br><br>
@@ -213,9 +198,24 @@ else:
     elif mode == "🔬 05. 내시경 AI 분석":
         st.header("🔬 Endoscopy AI Diagnostic Assistant")
         st.success("💎 **Olympus NBI 모드 특화 분석 엔진 탑재**")
-        up_img = st.file_uploader("📸 내시경 이미지 업로드", type=['jpg', 'png'])
-        if up_img:
-            st.image(up_img, width=400)
-        if up_img:
-            if st.button("📝 내시경 정밀 판독 리포트 발행 (과금)"):
-                st.success("📄 공식 AI 판독 보고서가 생성되었습니다.")
+        
+        col_img, col_vid = st.columns(2)
+        
+        with col_img:
+            st.subheader("📸 내시경 이미지 분석")
+            up_img = st.file_uploader("정지 화면 업로드", type=['jpg', 'png', 'jpeg'], key="endo_img")
+            if up_img:
+                st.image(up_img, use_container_width=True, caption="판독 대상 이미지")
+        
+        with col_vid:
+            st.subheader("🎥 내시경 동영상 분석")
+            up_vid = st.file_uploader("내시경 영상 업로드", type=['mp4', 'mov', 'avi'], key="endo_vid")
+            if up_vid:
+                st.video(up_vid)
+                st.info("📽️ AI가 영상 프레임을 실시간 스캔하여 이상 병변을 탐지합니다.")
+            
+        st.write("---")
+        if st.button("📝 내시경 정밀 판독 리포트 발행 (과금)"):
+            with st.spinner("AI가 영상을 정밀 분석하여 보고서를 생성 중입니다..."):
+                time.sleep(2)
+            st.success("📄 공식 AI 판독 보고서가 생성되었습니다. (결제 연동 완료)")
