@@ -129,11 +129,18 @@ else:
         uploaded_files = st.file_uploader("PDF 논문 업로드", type=['pdf'], accept_multiple_files=True)
         if uploaded_files:
             context_text = get_pdf_text(uploaded_files)
-            user_query = st.text_input("분석 질문 입력")
+            user_query = st.text_input("분석 질문 입력", placeholder="예: 이 논문의 핵심 결론을 요약해줘")
             if user_query:
-                model = genai.GenerativeModel('gemini-1.5-flash')
-                response = model.generate_content(f"{context_text[:10000]}\n\n질문: {user_query}")
-                st.info(response.text)
+                try:
+                    with st.spinner("논문을 분석하여 답변을 생성 중입니다..."):
+                        # 모델 이름을 'models/gemini-1.5-flash'로 명확히 지정하여 NotFound 방지
+                        model = genai.GenerativeModel('models/gemini-1.5-flash')
+                        response = model.generate_content(f"당신은 전문 의학 연구원입니다. 다음 내용을 바탕으로 질문에 답하세요:\n\n{context_text[:15000]}\n\n질문: {user_query}")
+                        st.markdown("### 📝 분석 결과")
+                        st.info(response.text)
+                except Exception as e:
+                    st.error(f"❌ 분석 중 오류가 발생했습니다: {e}")
+                    st.warning("API 키 설정을 확인하거나 잠시 후 다시 시도해 주세요.")
 
     elif mode == "📊 02. 환자 리포트 (NGS/OCR)":
         st.header("📊 Clinical Data Analysis & OCR")
@@ -189,7 +196,7 @@ else:
         if up_img:
             st.image(up_img, width=400, caption="업로드된 내시경 이미지")
             
-        # 영상 업로드 (추가된 부분)
+        # 영상 업로드
         up_vid = st.file_uploader("🎥 내시경 동영상 업로드 (MP4/MOV)", type=['mp4', 'mov', 'avi'])
         if up_vid:
             st.video(up_vid)
