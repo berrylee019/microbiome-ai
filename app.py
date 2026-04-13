@@ -5,6 +5,11 @@ import time
 import pandas as pd
 import numpy as np
 
+password = st.sidebar.text_input("비밀번호 입력", type="password")
+if password != "1103":
+    st.error("비밀번호가 틀렸습니다.")
+    st.stop()  # 이후 코드 실행 중단
+    
 # 1. 페이지 설정
 st.set_page_config(
     page_title="AI Microbiome Suite",
